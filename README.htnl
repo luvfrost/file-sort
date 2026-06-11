@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>File-Sort | 跨端智能文件管理枢纽</title>
+    <!-- 使用现代、干净的无趣单调感设计：玻璃态、微交互、自然流动感 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, rgba(10, 20, 35, 1) 0%, rgba(2, 8, 18, 1) 100%);
+            font-family: 'Inter', sans-serif;
+            color: #eef5ff;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 150, 255, 0.5);
+            border-radius: 8px;
+        }
+
+        /* 玻璃面板公用样式 */
+        .glass-card {
+            background: rgba(20, 30, 45, 0.55);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, border-color 0.2s;
+        }
+        .glass-card:hover {
+            border-color: rgba(80, 160, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2rem 3rem;
+        }
+
+        /* 头部区域 */
+        .hero {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            gap: 2rem;
+        }
+        .logo-area h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #7AA9FF, #3B82F6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+        .logo-area p {
+            font-size: 1rem;
+            color: #b9ceff;
+            margin-top: 0.5rem;
+            font-weight: 400;
+        }
+        .badge-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .pill-badge {
+            background: rgba(59,130,246,0.2);
+            backdrop-filter: blur(4px);
+            border-radius: 100px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(59,130,246,0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pill-badge i {
+            font-size: 1rem;
+            color: #7aa9ff;
+        }
+
+        /* 核心模块区 4大技术 */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 4rem;
+        }
+        .tech-card {
+            padding: 1.6rem;
+            transition: all 0.25s;
+        }
+        .tech-icon {
+            font-size: 2.2rem;
+            background: linear-gradient(145deg, #3b82f6, #2563eb);
+            width: 55px;
+            height: 55px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+        }
+        .tech-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+        .tech-desc {
+            color: #cddcff;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+        .tech-stack {
+            font-size: 0.75rem;
+            font-family: monospace;
+            background: rgba(0,0,0,0.35);
+            border-radius: 20px;
+            padding: 0.3rem 0.8rem;
+            display: inline-block;
+            letter-spacing: 0.3px;
+            color: #9bbdff;
+        }
+
+        /* 对比表格区 (告别传统表格沉闷设计，卡片化横向滚动增强对比感) */
+        .compare-section {
+            margin: 3rem 0 4rem;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title i {
+            font-size: 2rem;
+            color: #3b82f6;
+        }
+        .compare-scroll {
+            overflow-x: auto;
+            border-radius: 1.8rem;
+            scrollbar-width: thin;
+        }
+        .compare-table {
+            min-width: 880px;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+        }
+        .compare-table th {
+            text-align: left;
+            padding: 1rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #b9d0ff;
+            background: rgba(15, 25, 40, 0.6);
+            border-radius: 1.2rem 1.2rem 0 0;
+        }
+        .compare-table td {
+            background: rgba(15, 25, 40, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 1rem 1.2rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            vertical-align: top;
+            transition: all 0.2s;
+        }
+        .compare-table tr:hover td {
+            background: rgba(30, 50, 75, 0.7);
+        }
+        .highlight-col {
+            border-left: 3px solid #3b82f6;
+            background: rgba(59,130,246,0.15);
+        }
+        .product-name {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .check-icon {
+            color: #4ade80;
+        }
+        .neutral-icon {
+            color: #facc15;
+        }
+
+        /* 统一文件树 + 标签预览区域 (交互可视化) */
+        .demo-preview {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 2rem;
+            padding: 1.8rem;
+            margin: 2.5rem 0;
+            border: 1px solid rgba(59,130,246,0.3);
+            backdrop-filter: blur(8px);
+        }
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+        .mock-tabs {
+            display: flex;
+            gap: 12px;
+        }
+        .mock-tab {
+            background: rgba(255,255,255,0.05);
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: default;
+            transition: 0.1s;
+        }
+        .mock-tab.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .file-tree {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .tree-column {
+            flex: 1;
+            min-width: 200px;
+        }
+        .tree-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+        .tree-item i {
+            width: 24px;
+            color: #7aa9ff;
+        }
+        .tag-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+        .tag {
+            background: rgba(59,130,246,0.3);
+            border-radius: 20px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .insight-text {
+            background: linear-gradient(90deg, #1e293b, transparent);
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            border-left: 3px solid #3b82f6;
+        }
+
+        /* 鸿蒙协同高亮 */
+        .harmony-badge {
+            background: #00a6c4;
+            background: linear-gradient(135deg, #1f6392, #0f4568);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(100,150,255,0.2);
+            font-size: 0.8rem;
+            color: #7d95c9;
+        }
+
+        button, .mock-link {
+            background: none;
+            border: none;
+            color: inherit;
+        }
+
+        @media (max-width: 760px) {
+            .container { padding: 1.2rem; }
+            .hero { flex-direction: column; align-items: flex-start; }
+            .logo-area h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero 区域 -->
+        <div class="hero">
+            <div class="logo-area">
+                <h1><i class="fas fa-folder-tree" style="background: none; -webkit-background-clip: unset; color: #6d9eff;"></i> File-Sort</h1>
+                <p>统一索引 · 跨端智连 · 无感流转</p>
+                <div style="display: flex; gap: 12px; margin-top: 14px;">
+                    <span class="pill-badge"><i class="fab fa-windows"></i> Windows</span>
+                    <span class="pill-badge"><i class="fab fa-android"></i> Android</span>
+                    <span class="pill-badge"><i class="fab fa-apple"></i> iPhone</span>
+                    <span class="pill-badge"><i class="fas fa-mobile-alt"></i> HarmonyOS</span>
+                </div>
+            </div>
+            <div class="badge-group">
+                <div class="pill-badge"><i class="fas fa-bolt"></i> 分布式直连</div>
+                <div class="pill-badge"><i class="fas fa-database"></i> 智能索引</div>
+                <div class="pill-badge"><i class="fas fa-tag"></i> 标签系统</div>
+            </div>
+        </div>
+
+        <!-- 四大核心模块 符合README设计 -->
+        <div class="tech-grid">
+            <div class="tech-card glass-card">
+                <div class="tech-icon"><i class="fas fa-search-plus"></i></div>
+                <h3>跨端索引</h3>
+                <div class="tech-desc">建立全局文件索引库，不移动原始文件，仅建立索引链接。支持Android无障碍、iOS文件扩展。</div>
+                <span class="tech-stack"><i class="fas fa-code-branch"></i> 索引 + 软链接</span>
+            </div>
+            <div class="tech-card glass-card">
+                <div class="tech-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <h3>高速互传</h3>
+                <div class="tech-desc">类似“快牙”的局域网直连 + WebRTC P2P传输，绕过带宽限制，智能NAT穿透。</div>
+                <span class="tech-stack"><i class="fas fa-wifi"></i> LAN P2P / WebRTC</span>
+            </div>
+            <div class="tech-card glass-card">
+                <div class="tech-icon"><i class="fas fa-file-alt"></i></div>
+                <h3>格式兼容</h3>
+                <div class="tech-desc">自动识别文件类型，不兼容格式 (PSD / HEIC 等) 提供转换建议，集成轻量转换引擎。</div>
+                <span class="tech-stack"><i class="fas fa-sync-alt"></i> 引擎转换建议</span>
+            </div>
+            <div class="tech-card glass-card">
+                <div class="tech-icon harmony-badge" style="background: linear-gradient(145deg, #0e7c8c, #0a5e6b);"><i class="fas fa-cloud-upload-alt"></i></div>
+                <h3>鸿蒙协同</h3>
+                <div class="tech-desc">利用鸿蒙分布式能力，实现文件无缝流转（流转而非拷贝），低延迟软总线体验。</div>
+                <span class="tech-stack"><i class="fab fa-huawei"></i> HarmonyOS SDK</span>
+            </div>
+        </div>
+
+        <!-- 对比表 向日葵/联想/Flix/快牙/坚果云 vs File-Sort -->
+        <div class="compare-section">
+            <div class="section-title">
+                <i class="fas fa-chart-simple"></i> 
+                <span>生态横评 · 能力透视</span>
+            </div>
+            <div class="compare-scroll">
+                <table class="compare-table">
+                    <thead>
+                        <tr><th>维度 / 产品</th><th>向日葵 / 联想超级互联</th><th>Flix (微软)</th><th>快牙 / 坚果云</th><th class="highlight-col">File-Sort (本项目)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="product-name"><i class="fas fa-crown"></i> 核心模式</td><td>远程控制/镜像为主，文件传输为辅</td><td>跨平台剪贴板/链接共享 (需微软账号)</td><td>点对点传输(快牙) 或 自动同步(坚果云)</td><td class="highlight-col">统一索引 + 智能分拣 + 分布式管理</td></tr>
+                        <tr><td class="product-name"><i class="fas fa-globe"></i> 跨平台能力</td><td>强 (Win/And/iOS)，操作延迟较高</td><td>强 (仅限Win/And/iOS)，深度绑定Office生态</td><td>快牙强(无视系统)，坚果云弱(特定文件夹)</td><td class="highlight-col">最强 (含HarmonyOS)，独立于大厂账号体系</td></tr>
+                        <tr><td class="product-name"><i class="fas fa-rocket"></i> 传输速度</td><td>依赖云端中转，速度受网络影响大</td><td>依赖网络，主要小文件/链接</td><td>快牙极快(热点直连)，坚果云依赖网速</td><td class="highlight-col">混合模式：局域网直连 + 云端索引</td></tr>
+                        <tr><td class="product-name"><i class="fas fa-folder-open"></i> 文件管理</td><td>弱 (仅见对方画面操作)</td><td>极弱 (共享内容，无结构管理)</td><td>坚果云强(网盘式)，快牙无管理</td><td class="highlight-col">强：统一文件树视图和标签系统</td></tr>
+                        <tr><td class="product-name"><i class="fas fa-microchip"></i> 鸿蒙支持</td><td>一般 (作为普通Android处理，无分布式优势)</td><td>无</td><td>无</td><td class="highlight-col">原生支持 (分布式软总线，低延迟流转)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 交互视觉预览: 统一文件树+标签系统 (去单调性模拟真实文件管理) -->
+        <div class="demo-preview">
+            <div class="preview-header">
+                <div class="mock-tabs">
+                    <div class="mock-tab active"><i class="fas fa-layer-group"></i> 智能索引树</div>
+                    <div class="mock-tab"><i class="fas fa-tags"></i> 标签分拣</div>
+                    <div class="mock-tab"><i class="fas fa-chart-line"></i> 跨端分布</div>
+                </div>
+                <div><i class="fas fa-sync-alt" style="opacity:0.6;"></i> 实时同步 · 4台设备在线</div>
+            </div>
+            <div class="file-tree">
+                <div class="tree-column">
+                    <div style="margin-bottom: 12px; font-weight:600;"><i class="fas fa-folder-open"></i> 统一根目录 (索引视图)</div>
+                    <div class="tree-item"><i class="fas fa-folder"></i> 📁 工作文档 <span style="margin-left:auto; font-size:0.7rem;">Win / 鸿蒙</span></div>
+                    <div class="tree-item" style="margin-left: 20px;"><i class="far fa-file-word"></i> 年度规划_v4.docx <span class="tag">待审</span></div>
+                    <div class="tree-item" style="margin-left: 20px;"><i class="far fa-image"></i> 设计初稿.psd <span class="tag">格式转换建议</span></div>
+                    <div class="tree-item"><i class="fas fa-folder"></i> 📁 个人相册 <span style="margin-left:auto;">iPhone · 4K</span></div>
+                    <div class="tree-item" style="margin-left: 20px;"><i class="fas fa-camera"></i> IMG_4532.heic <span class="tag">可转JPEG</span></div>
+                    <div class="tree-item"><i class="fas fa-folder"></i> 📁 项目资源 (Android/PC)</div>
+                </div>
+                <div class="tree-column">
+                    <div style="margin-bottom: 12px; font-weight:600;"><i class="fas fa-tag"></i> 智能标签云</div>
+                    <div class="tag-group"><span class="tag">#工作重要</span><span class="tag">#待转换</span><span class="tag">#跨端访问频繁</span></div>
+                    <div class="tag-group"><span class="tag">#照片2025</span><span class="tag">#鸿蒙专属</span><span class="tag">#局域网热点</span></div>
+                    <div class="insight-text">
+                        <i class="fas fa-lightbulb" style="margin-right: 8px;"></i> 智能建议：检测到“设计初稿.psd”在手机上打开兼容性低 → 推荐一键转换为PDF/PNG。基于本地引擎，无需上传云端。
+                    </div>
+                    <div class="tree-item"><i class="fas fa-charging-station"></i> 鸿蒙流转演示：从MatePad Pro 流转“会议纪要.txt”至 PC，延迟&lt;20ms</div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 15px; font-size:0.75rem; color:#98b1e6;">
+                <span><i class="fas fa-check-circle check-icon"></i> 索引链接 237个</span>
+                <span><i class="fas fa-bolt"></i> 直连设备：Windows | 一加11 | iPhone15 | 华为P60</span>
+            </div>
+        </div>
+
+        <!-- 新增特性亮点: 混合传输 + NAT穿透快牙式灵感 -->
+        <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1rem 0;">
+            <div class="glass-card" style="flex: 1; padding: 1.4rem;">
+                <div style="display: flex; gap: 12px; align-items:center; margin-bottom: 12px;">
+                    <i class="fas fa-exchange-alt fa-fw" style="font-size: 1.8rem; color:#3b82f6;"></i>
+                    <h3 style="font-size:1.2rem;">局域网疾速直连</h3>
+                </div>
+                <p style="font-size: 0.85rem;">类“快牙”热点直连 + WebRTC P2P，最高可达 80MB/s，支持断点续传。无需中心服务器，多端自动发现。</p>
+            </div>
+            <div class="glass-card" style="flex: 1; padding: 1.4rem;">
+                <div style="display: flex; gap: 12px; align-items:center; margin-bottom: 12px;">
+                    <i class="fas fa-shield-alt fa-fw" style="font-size: 1.8rem; color:#4ade80;"></i>
+                    <h3 style="font-size:1.2rem;">分布式隐私优先</h3>
+                </div>
+                <p style="font-size: 0.85rem;">所有索引元数据端到端加密，原始文件留在本地。鸿蒙分布式软总线仅在信任环内流转，避免隐私泄露。</p>
+            </div>
+            <div class="glass-card" style="flex: 1; padding: 1.4rem;">
+                <div style="display: flex; gap: 12px; align-items:center; margin-bottom: 12px;">
+                    <i class="fas fa-brain fa-fw" style="font-size: 1.8rem; color:#facc15;"></i>
+                    <h3 style="font-size:1.2rem;">智能格式工作流</h3>
+                </div>
+                <p style="font-size: 0.85rem;">支持HEIC、PSD、SVG等格式转换建议，集成轻量转换引擎，兼容Android/iOS/Win。大幅提升异构设备协作效率。</p>
+            </div>
+        </div>
+
+        <!-- 愿景口号+附加对比模块中的技术评估（混合模式说明） -->
+        <div class="glass-card" style="padding: 1.8rem; margin-top: 2rem; text-align: center;">
+            <i class="fas fa-rocket" style="font-size: 2.5rem; color: #60a5fa; margin-bottom: 0.6rem; display: inline-block;"></i>
+            <h3 style="font-size: 1.6rem; font-weight: 600;">不只是文件管理，是跨端生产力枢纽</h3>
+            <p style="max-width: 700px; margin: 0.8rem auto 0; color: #c4dbff;">打破生态壁垒: Windows · Android · iOS · HarmonyOS 统一索引 & 高速流转</p>
+            <div style="display: flex; justify-content: center; gap: 28px; margin-top: 1.5rem; flex-wrap: wrap;">
+                <div><i class="fab fa-windows"></i> 文件资源管理器集成</div>
+                <div><i class="fab fa-android"></i> SAF + 无障碍索引</div>
+                <div><i class="fab fa-apple"></i> 文件 App Extension</div>
+                <div><i class="fas fa-mobile-alt"></i> 鸿蒙原子化服务</div>
+            </div>
+        </div>
+
+        <footer>
+            <i class="far fa-copyright"></i> File-Sort · 开源跨端理念 | 统一索引｜标签分拣｜分布式软总线准备就绪<br>
+            * 对比信息基于公开资料及设计理念，展现下一代文件管理的可能性。
+        </footer>
+    </div>
+
+    <!-- 轻量微交互 增加一点点动态悬停效果已经用css实现，无需额外复杂js，保证宁静 -->
+    <script>
+        // 极简脚本：用来强化演示区域的“索引刷新”微交互（模拟实际数据刷新）
+        (function(){
+            const insightDiv = document.querySelector('.insight-text');
+            if(insightDiv){
+                setInterval(() => {
+                    // 每20秒简单改变一下建议内容，增加生动感但不过分
+                    const messages = [
+                        "智能建议：检测到“设计初稿.psd”在手机上打开兼容性低 → 推荐一键转换为PDF/PNG。基于本地引擎，无需上传云端。",
+                        "高速传输就绪: 当前局域网内发现 2 台设备支持WebRTC直连，传输速度可达 65MB/s。",
+                        "标签‘跨端访问频繁’文件已预加载索引，打开响应速度提升45%。",
+                        "鸿蒙流转: 手机拍摄的视频可无损流转至PC剪辑，无需拷贝。"
+                    ];
+                    let idx = Math.floor(Date.now() / 8000) % messages.length;
+                    insightDiv.innerHTML = `<i class="fas fa-lightbulb" style="margin-right: 8px;"></i> ${messages[idx]}`;
+                }, 8000);
+            }
+
+            // 模拟tree展示小动画 - 标签高亮流转感，仅增加动感
+            const tags = document.querySelectorAll('.tag');
+            if(tags.length){
+                setInterval(() => {
+                    tags.forEach(tag => {
+                        if(Math.random() > 0.7){
+                            tag.style.transition = '0.2s';
+                            tag.style.background = 'rgba(80,180,255,0.5)';
+                            setTimeout(()=>{ tag.style.background = ''; }, 300);
+                        }
+                    });
+                }, 4000);
+            }
+        })();
+    </script>
+</body>
+</html>
